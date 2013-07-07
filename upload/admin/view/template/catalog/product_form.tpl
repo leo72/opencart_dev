@@ -316,7 +316,7 @@
                   <input type="hidden" name="product_attribute[<?php echo $attribute_row; ?>][attribute_id]" value="<?php echo $product_attribute['attribute_id']; ?>" /></td>
                 <td class="left"><?php foreach ($languages as $language) { ?>
                   <textarea name="product_attribute[<?php echo $attribute_row; ?>][product_attribute_description][<?php echo $language['language_id']; ?>][text]" cols="40" rows="5"><?php echo isset($product_attribute['product_attribute_description'][$language['language_id']]) ? $product_attribute['product_attribute_description'][$language['language_id']]['text'] : ''; ?></textarea>
-                  <img src="view/image/flags/<?php echo $language['image']; ?>" title="<?php echo $language['name']; ?>" /><br />
+                  <img src="view/image/flags/<?php echo $language['image']; ?>" title="<?php echo $language['name']; ?>" align="top" /><br />
                   <?php } ?></td>
                 <td class="left"><a onclick="$('#attribute-row<?php echo $attribute_row; ?>').remove();" class="button"><?php echo $button_remove; ?></a></td>
               </tr>
@@ -727,7 +727,10 @@ $('input[name=\'related\']').autocomplete({
 		$('#product-related div:even').attr('class', 'even');
 				
 		return false;
-	}
+	},
+	focus: function(event, ui) {
+      return false;
+   }
 });
 
 $('#product-related div img').live('click', function() {
@@ -746,7 +749,7 @@ function addAttribute() {
 	html += '    <td class="left"><input type="text" name="product_attribute[' + attribute_row + '][name]" value="" /><input type="hidden" name="product_attribute[' + attribute_row + '][attribute_id]" value="" /></td>';
 	html += '    <td class="left">';
 	<?php foreach ($languages as $language) { ?>
-	html += '<textarea name="product_attribute[' + attribute_row + '][product_attribute_description][<?php echo $language['language_id']; ?>][text]" cols="40" rows="5"></textarea><img src="view/image/flags/<?php echo $language['image']; ?>" title="<?php echo $language['name']; ?>" /><br />';
+	html += '<textarea name="product_attribute[' + attribute_row + '][product_attribute_description][<?php echo $language['language_id']; ?>][text]" cols="40" rows="5"></textarea><img src="view/image/flags/<?php echo $language['image']; ?>" title="<?php echo $language['name']; ?>" align="top" /><br />';
     <?php } ?>
 	html += '    </td>';
 	html += '    <td class="left"><a onclick="$(\'#attribute-row' + attribute_row + '\').remove();" class="button"><?php echo $button_remove; ?></a></td>';
@@ -799,7 +802,10 @@ function attributeautocomplete(attribute_row) {
 			$('input[name=\'product_attribute[' + attribute_row + '][attribute_id]\']').attr('value', ui.item.value);
 			
 			return false;
-		}
+		},
+		focus: function(event, ui) {
+      		return false;
+   		}
 	});
 }
 
@@ -937,7 +943,10 @@ $('input[name=\'option\']').catcomplete({
 		option_row++;
 		
 		return false;
-	}
+	},
+	focus: function(event, ui) {
+      return false;
+   }
 });
 //--></script> 
 <script type="text/javascript"><!--		
