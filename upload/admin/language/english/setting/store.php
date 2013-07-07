@@ -10,8 +10,8 @@ $_['text_account']                 = 'Account';
 $_['text_checkout']                = 'Checkout';
 $_['text_stock']                   = 'Stock';
 $_['text_image_manager']           = 'Image Manager';
-$_['text_browse']                  = 'Browse Files';
-$_['text_clear']                   = 'Clear Image';
+$_['text_browse']                  = 'Browse';
+$_['text_clear']                   = 'Clear';
 $_['text_shipping']                = 'Shipping Address';
 $_['text_payment']                 = 'Payment Address';
 
@@ -62,7 +62,7 @@ $_['entry_image_related']          = 'Related Product Image Size:';
 $_['entry_image_compare']          = 'Compare Image Size:';
 $_['entry_image_wishlist']         = 'Wish List Image Size:';
 $_['entry_image_cart']             = 'Cart Image Size:';
-$_['entry_use_ssl']                = 'Use SSL:<br /><span class="help">To use SSL check with your host if a SSL certificate is installed.</span>';
+$_['entry_secure']                 = 'Use SSL:<br /><span class="help">To use SSL check with your host if a SSL certificate is installed.</span>';
 
 // Error
 $_['error_warning']                = 'Warning: Please check the form carefully for errors!';

@@ -3,7 +3,7 @@ class ControllerSettingStore extends Controller {
 	private $error = array(); 
 
 	public function index() {
-		$this->load->language('setting/store');
+		$this->language->load('setting/store');
 
 		$this->document->setTitle($this->language->get('heading_title'));
 		 
@@ -13,7 +13,7 @@ class ControllerSettingStore extends Controller {
 	}
 	      
   	public function insert() {
-    	$this->load->language('setting/store');
+    	$this->language->load('setting/store');
 
     	$this->document->setTitle($this->language->get('heading_title')); 
 		
@@ -35,7 +35,7 @@ class ControllerSettingStore extends Controller {
   	}
 
   	public function update() {
-    	$this->load->language('setting/store');
+    	$this->language->load('setting/store');
 
     	$this->document->setTitle($this->language->get('heading_title'));
 		
@@ -57,7 +57,7 @@ class ControllerSettingStore extends Controller {
   	}
 
   	public function delete() {
-    	$this->load->language('setting/store');
+    	$this->language->load('setting/store');
 
     	$this->document->setTitle($this->language->get('heading_title'));
 		
@@ -80,7 +80,7 @@ class ControllerSettingStore extends Controller {
     	$this->getList();
   	}
 	
-	private function getList() {
+	protected function getList() {
 		$url = '';
 			
 		if (isset($this->request->get['page'])) {
@@ -236,7 +236,7 @@ class ControllerSettingStore extends Controller {
 		$this->data['entry_image_compare'] = $this->language->get('entry_image_compare');
 		$this->data['entry_image_wishlist'] = $this->language->get('entry_image_wishlist');
 		$this->data['entry_image_cart'] = $this->language->get('entry_image_cart');
-		$this->data['entry_use_ssl'] = $this->language->get('entry_use_ssl');
+		$this->data['entry_secure'] = $this->language->get('entry_secure');
 				
 		$this->data['button_save'] = $this->language->get('button_save');
 		$this->data['button_cancel'] = $this->language->get('button_cancel');
@@ -852,12 +852,12 @@ class ControllerSettingStore extends Controller {
 			$this->data['config_image_cart_height'] = 80;
 		}
 
-		if (isset($this->request->post['config_use_ssl'])) {
-			$this->data['config_use_ssl'] = $this->request->post['config_use_ssl'];
-		} elseif (isset($store_info['config_use_ssl'])) {
-			$this->data['config_use_ssl'] = $store_info['config_use_ssl'];
+		if (isset($this->request->post['config_secure'])) {
+			$this->data['config_secure'] = $this->request->post['config_secure'];
+		} elseif (isset($store_info['config_secure'])) {
+			$this->data['config_secure'] = $store_info['config_secure'];
 		} else {
-			$this->data['config_use_ssl'] = '';
+			$this->data['config_secure'] = '';
 		}
 
 		$this->template = 'setting/store_form.tpl';
@@ -869,7 +869,7 @@ class ControllerSettingStore extends Controller {
 		$this->response->setOutput($this->render());
 	}
 
-	private function validateForm() {
+	protected function validateForm() {
 		if (!$this->user->hasPermission('modify', 'setting/store')) {
 			$this->error['warning'] = $this->language->get('error_permission');
 		}
@@ -957,7 +957,7 @@ class ControllerSettingStore extends Controller {
 		}
 	}
 
-	private function validateDelete() {
+	protected function validateDelete() {
 		if (!$this->user->hasPermission('modify', 'setting/store')) {
 			$this->error['warning'] = $this->language->get('error_permission');
 		}
@@ -984,12 +984,16 @@ class ControllerSettingStore extends Controller {
 	}
 	
 	public function template() {
-		$template = basename($this->request->get['template']);
-		
-		if (file_exists(DIR_IMAGE . 'templates/' . $template . '.png')) {
-			$image = HTTPS_IMAGE . 'templates/' . $template . '.png';
+		if (isset($this->request->server['HTTPS']) && (($this->request->server['HTTPS'] == 'on') || ($this->request->server['HTTPS'] == '1'))) {
+			$server = HTTPS_CATALOG;
 		} else {
-			$image = HTTPS_IMAGE . 'no_image.jpg';
+			$server = HTTP_CATALOG;
+		}		
+		
+		if (file_exists(DIR_IMAGE . 'templates/' . basename($this->request->get['template']) . '.png')) {
+			$image = $server . 'image/templates/' . basename($this->request->get['template']) . '.png';
+		} else {
+			$image = $server . 'image/no_image.jpg';
 		}
 		
 		$this->response->setOutput('<img src="' . $image . '" alt="" title="" style="border: 1px solid #EEEEEE;" />');

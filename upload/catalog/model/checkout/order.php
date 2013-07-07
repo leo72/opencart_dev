@@ -100,6 +100,8 @@ class ModelCheckoutOrder extends Model {
 				'payment_firstname'       => $order_query->row['payment_firstname'],
 				'payment_lastname'        => $order_query->row['payment_lastname'],				
 				'payment_company'         => $order_query->row['payment_company'],
+				'payment_company_id'      => $order_query->row['payment_company_id'],
+				'payment_tax_id'          => $order_query->row['payment_tax_id'],
 				'payment_address_1'       => $order_query->row['payment_address_1'],
 				'payment_address_2'       => $order_query->row['payment_address_2'],
 				'payment_postcode'        => $order_query->row['payment_postcode'],
@@ -169,7 +171,7 @@ class ModelCheckoutOrder extends Model {
 				}
 			}
 
-			// Blacklist
+			// Ban IP
 			$status = false;
 			
 			$this->load->model('account/customer');
@@ -178,14 +180,14 @@ class ModelCheckoutOrder extends Model {
 				$results = $this->model_account_customer->getIps($order_info['customer_id']);
 				
 				foreach ($results as $result) {
-					if ($this->model_account_customer->isBlacklisted($result['ip'])) {
+					if ($this->model_account_customer->isBanIp($result['ip'])) {
 						$status = true;
 						
 						break;
 					}
 				}
 			} else {
-				$status = $this->model_account_customer->isBlacklisted($order_info['ip']);
+				$status = $this->model_account_customer->isBanIp($order_info['ip']);
 			}
 			
 			if ($status) {
@@ -282,7 +284,7 @@ class ModelCheckoutOrder extends Model {
 			$template->data['text_footer'] = $language->get('text_new_footer');
 			$template->data['text_powered'] = $language->get('text_new_powered');
 			
-			$template->data['logo'] = HTTP_IMAGE . $this->config->get('config_logo');		
+			$template->data['logo'] = $this->config->get('config_url') . 'image/' . $this->config->get('config_logo');		
 			$template->data['store_name'] = $order_info['store_name'];
 			$template->data['store_url'] = $order_info['store_url'];
 			$template->data['customer_id'] = $order_info['customer_id'];
@@ -473,11 +475,12 @@ class ModelCheckoutOrder extends Model {
 				$text .= $order_info['store_url'] . 'index.php?route=account/download' . "\n\n";
 			}
 			
+			// Comment
 			if ($order_info['comment']) {
 				$text .= $language->get('text_new_comment') . "\n\n";
 				$text .= $order_info['comment'] . "\n\n";
 			}
-			
+
 			$text .= $language->get('text_new_footer') . "\n\n";
 		
 			$mail = new Mail(); 
@@ -585,7 +588,7 @@ class ModelCheckoutOrder extends Model {
 				}
 			}			
 
-			// Blacklist
+			// Ban IP
 			$status = false;
 			
 			$this->load->model('account/customer');
@@ -595,14 +598,14 @@ class ModelCheckoutOrder extends Model {
 				$results = $this->model_account_customer->getIps($order_info['customer_id']);
 				
 				foreach ($results as $result) {
-					if ($this->model_account_customer->isBlacklisted($result['ip'])) {
+					if ($this->model_account_customer->isBanIp($result['ip'])) {
 						$status = true;
 						
 						break;
 					}
 				}
 			} else {
-				$status = $this->model_account_customer->isBlacklisted($order_info['ip']);
+				$status = $this->model_account_customer->isBanIp($order_info['ip']);
 			}
 			
 			if ($status) {
