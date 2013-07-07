@@ -283,10 +283,11 @@ class ControllerCheckoutConfirm extends Controller {
 				$this->load->model('affiliate/affiliate');
 				
 				$affiliate_info = $this->model_affiliate_affiliate->getAffiliateByCode($this->request->cookie['tracking']);
+				$subtotal = $this->cart->getSubTotal();
 				
 				if ($affiliate_info) {
 					$data['affiliate_id'] = $affiliate_info['affiliate_id']; 
-					$data['commission'] = ($total / 100) * $affiliate_info['commission']; 
+					$data['commission'] = ($subtotal / 100) * $affiliate_info['commission']; 
 				} else {
 					$data['affiliate_id'] = 0;
 					$data['commission'] = 0;
@@ -360,7 +361,7 @@ class ControllerCheckoutConfirm extends Controller {
 					'quantity'   => $product['quantity'],
 					'subtract'   => $product['subtract'],
 					'price'      => $this->currency->format($this->tax->calculate($product['price'], $product['tax_class_id'], $this->config->get('config_tax'))),
-					'total'      => $this->currency->format($this->tax->calculate($product['total'], $product['tax_class_id'], $this->config->get('config_tax'))),
+					'total'      => $this->currency->format($this->tax->calculate($product['price'], $product['tax_class_id'], $this->config->get('config_tax')) * $product['quantity']),
 					'href'       => $this->url->link('product/product', 'product_id=' . $product['product_id'])
 				); 
 			} 

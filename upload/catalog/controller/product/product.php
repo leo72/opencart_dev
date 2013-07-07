@@ -51,7 +51,7 @@ class ControllerProductProduct extends Controller {
 			if ($manufacturer_info) {	
 				$this->data['breadcrumbs'][] = array(
 					'text'	    => $manufacturer_info['name'],
-					'href'	    => $this->url->link('product/manufacturer/product', 'manufacturer_id=' . $this->request->get['manufacturer_id']),					
+					'href'	    => $this->url->link('product/manufacturer/info', 'manufacturer_id=' . $this->request->get['manufacturer_id']),					
 					'separator' => $this->language->get('text_separator')
 				);
 			}
@@ -80,11 +80,11 @@ class ControllerProductProduct extends Controller {
 				'text'      => $this->language->get('text_search'),
 				'href'      => $this->url->link('product/search', $url),
 				'separator' => $this->language->get('text_separator')
-			);	
+			); 	
 		}
 		
 		if (isset($this->request->get['product_id'])) {
-			$product_id = $this->request->get['product_id'];
+			$product_id = (int)$this->request->get['product_id'];
 		} else {
 			$product_id = 0;
 		}
@@ -92,8 +92,6 @@ class ControllerProductProduct extends Controller {
 		$this->load->model('catalog/product');
 		
 		$product_info = $this->model_catalog_product->getProduct($product_id);
-		
-		$this->data['product_info'] = $product_info;
 		
 		if ($product_info) {
 			$url = '';
@@ -177,7 +175,7 @@ class ControllerProductProduct extends Controller {
 			
 			$this->data['product_id'] = $this->request->get['product_id'];
 			$this->data['manufacturer'] = $product_info['manufacturer'];
-			$this->data['manufacturers'] = $this->url->link('product/manufacturer/product', 'manufacturer_id=' . $product_info['manufacturer_id']);
+			$this->data['manufacturers'] = $this->url->link('product/manufacturer/info', 'manufacturer_id=' . $product_info['manufacturer_id']);
 			$this->data['model'] = $product_info['model'];
 			$this->data['reward'] = $product_info['reward'];
 			$this->data['points'] = $product_info['points'];
@@ -344,12 +342,12 @@ class ControllerProductProduct extends Controller {
 			
 			$this->data['tags'] = array();
 					
-			$results = $this->model_catalog_product->getProductTags($this->request->get['product_id']);
+			$tags = explode(',', $product_info['tag']);
 			
-			foreach ($results as $result) {
+			foreach ($tags as $tag) {
 				$this->data['tags'][] = array(
-					'tag'  => $result['tag'],
-					'href' => $this->url->link('product/search', 'filter_tag=' . $result['tag'])
+					'tag'  => trim($tag),
+					'href' => $this->url->link('product/search', 'filter_tag=' . trim($tag))
 				);
 			}
 			
@@ -533,7 +531,7 @@ class ControllerProductProduct extends Controller {
 		if (!empty($this->request->files['file']['name'])) {
 			$filename = basename(preg_replace('/[^a-zA-Z0-9\.\-\s+]/', '', html_entity_decode($this->request->files['file']['name'], ENT_QUOTES, 'UTF-8')));
 			
-			if ((strlen($filename) < 3) || (strlen($filename) > 64)) {
+			if ((utf8_strlen($filename) < 3) || (utf8_strlen($filename) > 64)) {
         		$json['error'] = $this->language->get('error_filename');
 	  		}	  	
 			

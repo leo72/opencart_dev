@@ -67,7 +67,7 @@ class ControllerCatalogCategory extends Controller {
 
 		$this->getList();
 	}
-
+	
 	private function getList() {
    		$this->data['breadcrumbs'] = array();
 

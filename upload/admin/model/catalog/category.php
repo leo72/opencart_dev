@@ -121,7 +121,7 @@ class ModelCatalogCategory extends Model {
 		
 		return $category_data;
 	}
-	
+		
 	public function getPath($category_id) {
 		$query = $this->db->query("SELECT name, parent_id FROM " . DB_PREFIX . "category c LEFT JOIN " . DB_PREFIX . "category_description cd ON (c.category_id = cd.category_id) WHERE c.category_id = '" . (int)$category_id . "' AND cd.language_id = '" . (int)$this->config->get('config_language_id') . "' ORDER BY c.sort_order, cd.name ASC");
 		
@@ -131,7 +131,7 @@ class ModelCatalogCategory extends Model {
 			return $query->row['name'];
 		}
 	}
-	
+		
 	public function getCategoryDescriptions($category_id) {
 		$category_description_data = array();
 		
