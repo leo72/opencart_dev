@@ -28,7 +28,7 @@ final class Cart {
         		$options = array();
       		} 
 			
-      		$product_query = $this->db->query("SELECT *, wcd.unit AS weight_class, mcd.unit AS length_class FROM " . DB_PREFIX . "product p LEFT JOIN " . DB_PREFIX . "product_description pd ON (p.product_id = pd.product_id) LEFT JOIN " . DB_PREFIX . "weight_class wc ON (p.weight_class_id = wc.weight_class_id) LEFT JOIN " . DB_PREFIX . "weight_class_description wcd ON (wc.weight_class_id = wcd.weight_class_id) LEFT JOIN " . DB_PREFIX . "length_class mc ON (p.length_class_id = mc.length_class_id) LEFT JOIN " . DB_PREFIX . "length_class_description mcd ON (mc.length_class_id = mcd.length_class_id) WHERE p.product_id = '" . (int)$product_id . "' AND pd.language_id = '" . (int)$this->config->get('config_language_id') . "' AND wcd.language_id = '" . (int)$this->config->get('config_language_id') . "' AND p.date_available <= NOW() AND p.status = '1'");
+      		$product_query = $this->db->query("SELECT * FROM " . DB_PREFIX . "product p LEFT JOIN " . DB_PREFIX . "product_description pd ON (p.product_id = pd.product_id) WHERE p.product_id = '" . (int)$product_id . "' AND pd.language_id = '" . (int)$this->config->get('config_language_id') . "' AND p.date_available <= NOW() AND p.status = '1'");
       	  	
 			if ($product_query->num_rows) {
       			$option_price = 0;
@@ -41,7 +41,7 @@ final class Cart {
 					$option_query = $this->db->query("SELECT po.product_option_id, po.option_id, od.name, o.type FROM " . DB_PREFIX . "product_option po LEFT JOIN `" . DB_PREFIX . "option` o ON (po.option_id = o.option_id) LEFT JOIN " . DB_PREFIX . "option_description od ON (o.option_id = od.option_id) WHERE po.product_option_id = '" . (int)$product_option_id . "' AND po.product_id = '" . (int)$product_id . "' AND od.language_id = '" . (int)$this->config->get('config_language_id') . "'");
 					
 					if ($option_query->num_rows) {
-						if ($option_query->row['type'] == 'select' || $option_query->row['type'] == 'radio') {
+						if ($option_query->row['type'] == 'select' || $option_query->row['type'] == 'radio' || $option_query->row['type'] == 'image') {
 							$option_value_query = $this->db->query("SELECT pov.option_value_id, ovd.name, pov.quantity, pov.subtract, pov.price, pov.price_prefix, pov.points, pov.points_prefix, pov.weight, pov.weight_prefix FROM " . DB_PREFIX . "product_option_value pov LEFT JOIN " . DB_PREFIX . "option_value ov ON (pov.option_value_id = ov.option_value_id) LEFT JOIN " . DB_PREFIX . "option_value_description ovd ON (ov.option_value_id = ovd.option_value_id) WHERE pov.product_option_value_id = '" . (int)$option_value . "' AND pov.product_option_id = '" . (int)$product_option_id . "' AND ovd.language_id = '" . (int)$this->config->get('config_language_id') . "'");
 							
 							if ($option_value_query->num_rows) {
@@ -215,29 +215,29 @@ final class Cart {
 				}
 				
       			$product_data[$key] = array(
-        			'key'          => $key,
-        			'product_id'   => $product_query->row['product_id'],
-        			'name'         => $product_query->row['name'],
-        			'model'        => $product_query->row['model'],
-					'shipping'     => $product_query->row['shipping'],
-        			'image'        => $product_query->row['image'],
-        			'option'       => $option_data,
-					'download'     => $download_data,
-        			'quantity'     => $quantity,
-        			'minimum'      => $product_query->row['minimum'],
-					'subtract'     => $product_query->row['subtract'],
-					'stock'        => $stock,
-        			'price'        => ($price + $option_price),
-        			'total'        => ($price + $option_price) * $quantity,
-					'reward'       => $reward * $quantity,
-					'points'       => ($product_query->row['points'] + $option_points) * $quantity,
-					'tax_class_id' => $product_query->row['tax_class_id'],
-        			'weight'       => ($product_query->row['weight'] + $option_weight) * $quantity,
-        			'weight_class' => $product_query->row['weight_class'],
-        			'length'       => $product_query->row['length'],
-					'width'        => $product_query->row['width'],
-					'height'       => $product_query->row['height'],
-        			'length_class' => $product_query->row['length_class']					
+        			'key'             => $key,
+        			'product_id'      => $product_query->row['product_id'],
+        			'name'            => $product_query->row['name'],
+        			'model'           => $product_query->row['model'],
+					'shipping'        => $product_query->row['shipping'],
+        			'image'           => $product_query->row['image'],
+        			'option'          => $option_data,
+					'download'        => $download_data,
+        			'quantity'        => $quantity,
+        			'minimum'         => $product_query->row['minimum'],
+					'subtract'        => $product_query->row['subtract'],
+					'stock'           => $stock,
+        			'price'           => ($price + $option_price),
+        			'total'           => ($price + $option_price) * $quantity,
+					'reward'          => $reward * $quantity,
+					'points'          => ($product_query->row['points'] + $option_points) * $quantity,
+					'tax_class_id'    => $product_query->row['tax_class_id'],
+        			'weight'          => ($product_query->row['weight'] + $option_weight) * $quantity,
+        			'weight_class_id' => $product_query->row['weight_class_id'],
+        			'length'          => $product_query->row['length'],
+					'width'           => $product_query->row['width'],
+					'height'          => $product_query->row['height'],
+        			'length_class_id' => $product_query->row['length_class_id']					
       			);
 			} else {
 				$this->remove($key);
@@ -249,9 +249,9 @@ final class Cart {
 		  
   	public function add($product_id, $qty = 1, $options = array()) {
     	if (!$options) {
-      		$key = $product_id;
+      		$key = (int)$product_id;
     	} else {
-      		$key = $product_id . ':' . base64_encode(serialize($options));
+      		$key = (int)$product_id . ':' . base64_encode(serialize($options));
     	}
     	
 		if ((int)$qty && ((int)$qty > 0)) {
@@ -286,7 +286,7 @@ final class Cart {
 	
     	foreach ($this->getProducts() as $product) {
 			if ($product['shipping']) {
-      			$weight += $this->weight->convert($product['weight'], $product['weight_class'], $this->config->get('config_weight_class'));
+      			$weight += $this->weight->convert($product['weight'], $product['weight_class_id'], $this->config->get('config_weight_class_id'));
 			}
 		}
 	
@@ -304,19 +304,23 @@ final class Cart {
   	}
 	
 	public function getTaxes() {
-		$taxes = array();
+		$tax_data = array();
 		
 		foreach ($this->getProducts() as $product) {
 			if ($product['tax_class_id']) {
-				if (!isset($taxes[$product['tax_class_id']])) {
-					$taxes[$product['tax_class_id']] = $product['total'] / 100 * $this->tax->getRate($product['tax_class_id']);
-				} else {
-					$taxes[$product['tax_class_id']] += $product['total'] / 100 * $this->tax->getRate($product['tax_class_id']);
+				$tax_rates = $this->tax->getRates($product['total'], $product['tax_class_id']);
+				
+				foreach ($tax_rates as $tax_rate) {
+					if (!isset($tax_data[$tax_rate['tax_rate_id']])) {
+						$tax_data[$tax_rate['tax_rate_id']] = $tax_rate['amount'];
+					} else {
+						$tax_data[$tax_rate['tax_rate_id']] += $tax_rate['amount'];
+					}
 				}
 			}
 		}
 		
-		return $taxes;
+		return $tax_data;
   	}
 
   	public function getTotal() {

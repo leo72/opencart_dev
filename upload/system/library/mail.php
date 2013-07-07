@@ -15,7 +15,7 @@ final class Mail {
 	public $timeout = 5;
 	public $newline = "\n";
 	public $crlf = "\r\n";
-	public $verp = FALSE;
+	public $verp = false;
 	public $parameter = '';
 
 	public function setTo($to) {
@@ -26,16 +26,12 @@ final class Mail {
 		$this->from = $from;
 	}
 
-	public function addheader($header, $value) {
-		$this->headers[$header] = $value;
-	}
-
 	public function setSender($sender) {
-		$this->sender = html_entity_decode($sender);
+		$this->sender = html_entity_decode($sender, ENT_QUOTES, 'UTF-8');
 	}
 
 	public function setSubject($subject) {
-		$this->subject = html_entity_decode($subject);
+		$this->subject = html_entity_decode($subject, ENT_QUOTES, 'UTF-8');
 	}
 
 	public function setText($text) {
@@ -50,7 +46,7 @@ final class Mail {
 		if (!$filename) {
 			$filename = basename($file);
 		}
-
+				
 		$this->attachments[] = array(
 			'filename' => $filename,
 			'file'     => $file
@@ -59,23 +55,28 @@ final class Mail {
 
 	public function send() {
 		if (!$this->to) {
-			exit('Error: E-Mail to required!');
+			trigger_error('Error: E-Mail to required!');
+			exit();			
 		}
 
 		if (!$this->from) {
-			exit('Error: E-Mail from required!');
+			trigger_error('Error: E-Mail from required!');
+			exit();					
 		}
 
 		if (!$this->sender) {
-			exit('Error: E-Mail sender required!');
+			trigger_error('Error: E-Mail sender required!');
+			exit();					
 		}
 
 		if (!$this->subject) {
-			exit('Error: E-Mail subject required!');
+			trigger_error('Error: E-Mail subject required!');
+			exit();					
 		}
 
 		if ((!$this->text) && (!$this->html)) {
-			exit('Error: E-Mail message required!');
+			trigger_error('Error: E-Mail message required!');
+			exit();					
 		}
 
 		if (is_array($this->to)) {
@@ -87,19 +88,20 @@ final class Mail {
 		$boundary = '----=_NextPart_' . md5(time());
 
 		$header = '';
-
+		
+		$header .= 'MIME-Version: 1.0' . $this->newline;
+		
 		if ($this->protocol != 'mail') {
 			$header .= 'To: ' . $to . $this->newline;
 			$header .= 'Subject: ' . $this->subject . $this->newline;
 		}
 		
 		$header .= 'Date: ' . date("D, d M Y H:i:s O") . $this->newline;
-		$header .= 'From: ' . '=?UTF-8?B?'.base64_encode($this->sender).'?=' . '<' . $this->from . '>' . $this->newline;
+		$header .= 'From: ' . '=?UTF-8?B?' . base64_encode($this->sender) . '?=' . '<' . $this->from . '>' . $this->newline;
 		$header .= 'Reply-To: ' . $this->sender . '<' . $this->from . '>' . $this->newline;
 		$header .= 'Return-Path: ' . $this->from . $this->newline;
 		$header .= 'X-Mailer: PHP/' . phpversion() . $this->newline;
-		$header .= 'MIME-Version: 1.0' . $this->newline;
-		$header .= 'Content-Type: multipart/mixed; boundary="' . $boundary . '"' . $this->newline;
+		$header .= 'Content-Type: multipart/related; boundary="' . $boundary . '"' . $this->newline;
 
 		if (!$this->html) {
 			$message  = '--' . $boundary . $this->newline;
@@ -111,7 +113,7 @@ final class Mail {
 			$message .= 'Content-Type: multipart/alternative; boundary="' . $boundary . '_alt"' . $this->newline . $this->newline;
 			$message .= '--' . $boundary . '_alt' . $this->newline;
 			$message .= 'Content-Type: text/plain; charset="utf-8"' . $this->newline;
-			$message .= 'Content-Transfer-Encoding: 8bit' . $this->newline;
+			$message .= 'Content-Transfer-Encoding: 8bit' . $this->newline . $this->newline;
 
 			if ($this->text) {
 				$message .= $this->text . $this->newline;
@@ -129,15 +131,17 @@ final class Mail {
 		foreach ($this->attachments as $attachment) {
 			if (file_exists($attachment['file'])) {
 				$handle = fopen($attachment['file'], 'r');
+				
 				$content = fread($handle, filesize($attachment['file']));
-
+				
 				fclose($handle);
 
 				$message .= '--' . $boundary . $this->newline;
-				$message .= 'Content-Type: application/octetstream' . $this->newline;
+				$message .= 'Content-Type: application/octetstream; name="' . basename($attachment['file']) . '"' . $this->newline;
 				$message .= 'Content-Transfer-Encoding: base64' . $this->newline;
 				$message .= 'Content-Disposition: attachment; filename="' . basename($attachment['filename']) . '"' . $this->newline;
-				$message .= 'Content-ID: <' . basename($attachment['filename']) . '>' . $this->newline . $this->newline;
+				$message .= 'Content-ID: <' . basename($attachment['filename']) . '>' . $this->newline;
+				$message .= 'X-Attachment-Id: ' . basename($attachment['filename']) . $this->newline . $this->newline;
 				$message .= chunk_split(base64_encode($content));
 			}
 		}
@@ -157,7 +161,8 @@ final class Mail {
 			$handle = fsockopen($this->hostname, $this->port, $errno, $errstr, $this->timeout);
 
 			if (!$handle) {
-				exit('Error: ' . $errstr . ' (' . $errno . ')');
+				trigger_error('Error: ' . $errstr . ' (' . $errno . ')');
+				exit();					
 			} else {
 				if (substr(PHP_OS, 0, 3) != 'WIN') {
 					socket_set_timeout($handle, $this->timeout, 0);
@@ -181,7 +186,8 @@ final class Mail {
 					}
 
 					if (substr($reply, 0, 3) != 220) {
-						exit('Error: STARTTLS not accepted from server!');
+						trigger_error('Error: STARTTLS not accepted from server!');
+						exit();								
 					}
 				}
 
@@ -199,7 +205,8 @@ final class Mail {
 					}
 
 					if (substr($reply, 0, 3) != 250) {
-						exit('Error: EHLO not accepted from server!');
+						trigger_error('Error: EHLO not accepted from server!');
+						exit();								
 					}
 
 					fputs($handle, 'AUTH LOGIN' . $this->crlf);
@@ -215,7 +222,8 @@ final class Mail {
 					}
 
 					if (substr($reply, 0, 3) != 334) {
-						exit('Error: AUTH LOGIN not accepted from server!');
+						trigger_error('Error: AUTH LOGIN not accepted from server!');
+						exit();						
 					}
 
 					fputs($handle, base64_encode($this->username) . $this->crlf);
@@ -231,7 +239,8 @@ final class Mail {
 					}
 
 					if (substr($reply, 0, 3) != 334) {
-						exit('Error: Username not accepted from server!');
+						trigger_error('Error: Username not accepted from server!');
+						exit();								
 					}
 
 					fputs($handle, base64_encode($this->password) . $this->crlf);
@@ -247,7 +256,8 @@ final class Mail {
 					}
 
 					if (substr($reply, 0, 3) != 235) {
-						exit('Error: Password not accepted from server!');
+						trigger_error('Error: Password not accepted from server!');
+						exit();								
 					}
 				} else {
 					fputs($handle, 'HELO ' . getenv('SERVER_NAME') . $this->crlf);
@@ -263,7 +273,8 @@ final class Mail {
 					}
 
 					if (substr($reply, 0, 3) != 250) {
-						exit('Error: HELO not accepted from server!');
+						trigger_error('Error: HELO not accepted from server!');
+						exit();							
 					}
 				}
 
@@ -284,7 +295,8 @@ final class Mail {
 				}
 
 				if (substr($reply, 0, 3) != 250) {
-					exit('Error: MAIL FROM not accepted from server!');
+					trigger_error('Error: MAIL FROM not accepted from server!');
+					exit();							
 				}
 
 				if (!is_array($this->to)) {
@@ -301,7 +313,8 @@ final class Mail {
 					}
 
 					if ((substr($reply, 0, 3) != 250) && (substr($reply, 0, 3) != 251)) {
-						exit('Error: RCPT TO not accepted from server!');
+						trigger_error('Error: RCPT TO not accepted from server!');
+						exit();							
 					}
 				} else {
 					foreach ($this->to as $recipient) {
@@ -318,7 +331,8 @@ final class Mail {
 						}
 
 						if ((substr($reply, 0, 3) != 250) && (substr($reply, 0, 3) != 251)) {
-							exit('Error: RCPT TO not accepted from server!');
+							trigger_error('Error: RCPT TO not accepted from server!');
+							exit();								
 						}
 					}
 				}
@@ -336,7 +350,8 @@ final class Mail {
 				}
 
 				if (substr($reply, 0, 3) != 354) {
-					exit('Error: DATA not accepted from server!');
+					trigger_error('Error: DATA not accepted from server!');
+					exit();						
 				}
             	
 				// According to rfc 821 we should not send more than 1000 including the CRLF
@@ -370,7 +385,8 @@ final class Mail {
 				}
 
 				if (substr($reply, 0, 3) != 250) {
-					exit('Error: DATA not accepted from server!');
+					trigger_error('Error: DATA not accepted from server!');
+					exit();						
 				}
 				
 				fputs($handle, 'QUIT' . $this->crlf);
@@ -386,7 +402,8 @@ final class Mail {
 				}
 
 				if (substr($reply, 0, 3) != 221) {
-					exit('Error: QUIT not accepted from server!');
+					trigger_error('Error: QUIT not accepted from server!');
+					exit();						
 				}
 
 				fclose($handle);

@@ -434,12 +434,16 @@ class ControllerAccountReturn extends Controller {
 
     	if (isset($this->request->post['order_id'])) {
       		$this->data['order_id'] = $this->request->post['order_id']; 	
+		} elseif (isset($this->session->data['return']['order_id'])) {
+			$this->data['order_id'] = $this->session->data['return']['order_id'];
 		} else {
       		$this->data['order_id'] = ''; 
     	}
 				
     	if (isset($this->request->post['date_ordered'])) {
       		$this->data['date_ordered'] = $this->request->post['date_ordered']; 	
+		} elseif (isset($this->session->data['return'])) {
+			$this->data['date_ordered'] = date('Y-m-d', strtotime($this->session->data['return']['date_added']));
 		} else {
       		$this->data['date_ordered'] = '';
     	}
@@ -447,25 +451,25 @@ class ControllerAccountReturn extends Controller {
 		if (isset($this->request->post['firstname'])) {
     		$this->data['firstname'] = $this->request->post['firstname'];
 		} else {
-			$this->data['firstname'] = '';
+			$this->data['firstname'] = $this->customer->getFirstName();
 		}
 
 		if (isset($this->request->post['lastname'])) {
     		$this->data['lastname'] = $this->request->post['lastname'];
 		} else {
-			$this->data['lastname'] = '';
+			$this->data['lastname'] = $this->customer->getLastName();
 		}
 		
 		if (isset($this->request->post['email'])) {
     		$this->data['email'] = $this->request->post['email'];
 		} else {
-			$this->data['email'] = '';
+			$this->data['email'] = $this->customer->getEmail();
 		}
 		
 		if (isset($this->request->post['telephone'])) {
     		$this->data['telephone'] = $this->request->post['telephone'];
 		} else {
-			$this->data['telephone'] = '';
+			$this->data['telephone'] = $this->customer->getTelephone();
 		}
 		
 		$this->load->model('localisation/return_reason');
@@ -474,10 +478,26 @@ class ControllerAccountReturn extends Controller {
 
     	if (isset($this->request->post['return_product'])) {
       		$this->data['return_products'] = $this->request->post['return_product']; 	
+		} elseif (isset($this->session->data['return'])) {
+			$this->data['return_products'] = array();
+			
+			foreach ($this->session->data['return']['product'] as $result) {
+				$this->data['return_products'][] = array(
+					'name'     => $result['name'],
+					'model'    => $result['model'],
+					'quantity' => 1,
+					'opened'   => false,
+					'comment'  => ''
+				);
+			}
 		} else {
       		$this->data['return_products'] = array();
     	}
-				
+		
+		if (isset($this->session->data['return'])) {
+			unset($this->session->data['return']);
+		}
+		
     	if (isset($this->request->post['comment'])) {
       		$this->data['comment'] = $this->request->post['comment']; 	
 		} else {
@@ -560,19 +580,19 @@ class ControllerAccountReturn extends Controller {
       		$this->error['order_id'] = $this->language->get('error_order_id');
     	}
 		
-		if ((strlen(utf8_decode($this->request->post['firstname'])) < 1) || (strlen(utf8_decode($this->request->post['firstname'])) > 32)) {
+		if ((utf8_strlen($this->request->post['firstname']) < 1) || (utf8_strlen($this->request->post['firstname']) > 32)) {
       		$this->error['firstname'] = $this->language->get('error_firstname');
     	}
 
-    	if ((strlen(utf8_decode($this->request->post['lastname'])) < 1) || (strlen(utf8_decode($this->request->post['lastname'])) > 32)) {
+    	if ((utf8_strlen($this->request->post['lastname']) < 1) || (utf8_strlen($this->request->post['lastname']) > 32)) {
       		$this->error['lastname'] = $this->language->get('error_lastname');
     	}
 
-    	if ((strlen(utf8_decode($this->request->post['email'])) > 96) || !preg_match('/^[^\@]+@.*\.[a-z]{2,6}$/i', $this->request->post['email'])) {
+    	if ((utf8_strlen($this->request->post['email']) > 96) || !preg_match('/^[^\@]+@.*\.[a-z]{2,6}$/i', $this->request->post['email'])) {
       		$this->error['email'] = $this->language->get('error_email');
     	}
 		
-    	if ((strlen(utf8_decode($this->request->post['telephone'])) < 3) || (strlen(utf8_decode($this->request->post['telephone'])) > 32)) {
+    	if ((utf8_strlen($this->request->post['telephone']) < 3) || (utf8_strlen($this->request->post['telephone']) > 32)) {
       		$this->error['telephone'] = $this->language->get('error_telephone');
     	}		
 
@@ -584,11 +604,11 @@ class ControllerAccountReturn extends Controller {
 					$this->error['reason'][$key] = $this->language->get('error_reason');
 				}	
 				
-				if ((strlen(utf8_decode($value['name'])) < 1) || (strlen(utf8_decode($value['name'])) > 255)) {
+				if ((utf8_strlen($value['name']) < 1) || (utf8_strlen($value['name']) > 255)) {
 					$this->error['name'][$key] = $this->language->get('error_name');
 				}	
 				
-				if ((strlen(utf8_decode($value['model'])) < 1) || (strlen(utf8_decode($value['model'])) > 64)) {
+				if ((utf8_strlen($value['model']) < 1) || (utf8_strlen($value['model']) > 64)) {
 					$this->error['model'][$key] = $this->language->get('error_model');
 				}							
 			}			

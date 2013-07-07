@@ -128,11 +128,10 @@ class ControllerPaymentSagepayUS extends Controller {
 			$this->data['sagepay_us_sort_order'] = $this->config->get('sagepay_us_sort_order');
 		}
 
-		$this->layout = 'common/layout';
 		$this->template = 'payment/sagepay_us.tpl';
 		$this->children = array(
 			'common/header',
-			'common/footer',
+			'common/footer'
 		);
 				
 		$this->response->setOutput($this->render());

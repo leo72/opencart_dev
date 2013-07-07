@@ -88,13 +88,13 @@ class ControllerInformationContact extends Controller {
 		if (isset($this->request->post['name'])) {
 			$this->data['name'] = $this->request->post['name'];
 		} else {
-			$this->data['name'] = '';
+			$this->data['name'] = $this->customer->getFirstName();
 		}
 
 		if (isset($this->request->post['email'])) {
 			$this->data['email'] = $this->request->post['email'];
 		} else {
-			$this->data['email'] = '';
+			$this->data['email'] = $this->customer->getEmail();
 		}
 		
 		if (isset($this->request->post['enquiry'])) {
@@ -183,7 +183,7 @@ class ControllerInformationContact extends Controller {
 	}
 	
   	private function validate() {
-    	if ((strlen(utf8_decode($this->request->post['name'])) < 3) || (strlen(utf8_decode($this->request->post['name'])) > 32)) {
+    	if ((utf8_strlen($this->request->post['name']) < 3) || (utf8_strlen($this->request->post['name']) > 32)) {
       		$this->error['name'] = $this->language->get('error_name');
     	}
 
@@ -191,7 +191,7 @@ class ControllerInformationContact extends Controller {
       		$this->error['email'] = $this->language->get('error_email');
     	}
 
-    	if ((strlen(utf8_decode($this->request->post['enquiry'])) < 10) || (strlen(utf8_decode($this->request->post['enquiry'])) > 3000)) {
+    	if ((utf8_strlen($this->request->post['enquiry']) < 10) || (utf8_strlen($this->request->post['enquiry']) > 3000)) {
       		$this->error['enquiry'] = $this->language->get('error_enquiry');
     	}
 

@@ -6,14 +6,12 @@ class ControllerPaymentPaymate extends Controller {
 		$this->load->model('checkout/order');
 		
 		$order_info = $this->model_checkout_order->getOrder($this->session->data['order_id']);
-
+		
+		$this->data['action'] = 'https://www.paymate.com/PayMate/ExpressPayment';
+		
 		$this->data['mid'] = $this->config->get('paymate_username');
 
-		$this->load->library('encryption');
-		
-		$encryption = new Encryption($this->config->get('config_encryption'));
-		
-		$this->data['return'] = $this->url->link('payment/paymate/callback', 'oid=' . base64_encode($encryption->encrypt($order_info['order_id'])) . '&conf=' . base64_encode($encryption->encrypt($order_info['payment_firstname'] . $order_info['payment_lastname'])));
+		$this->data['return'] = $this->url->link('payment/paymate/callback', 'oid=' . $order_info['order_id'] . '&conf=' . base64_encode($order_info['payment_firstname'] . $order_info['payment_lastname']));
 
 		if ($this->config->get('paymate_include_order')) {
 			$this->data['ref'] = html_entity_decode($this->config->get('config_name'), ENT_QUOTES, 'UTF-8') . " (#" . $order_info['order_id'] . ")";
@@ -55,8 +53,6 @@ class ControllerPaymentPaymate extends Controller {
 		$this->data['regindi_state'] = html_entity_decode($order_info['payment_zone'], ENT_QUOTES, 'UTF-8');
 		$this->data['regindi_pcode'] = html_entity_decode($order_info['payment_postcode'], ENT_QUOTES, 'UTF-8');
 		$this->data['pmt_country'] = $order_info['payment_iso_code_2'];
-
-		$this->data['action'] = 'https://www.paymate.com/PayMate/ExpressPayment';
 		
 		if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/payment/paymate.tpl')) {
 			$this->template = $this->config->get('config_template') . '/template/payment/paymate.tpl';
@@ -75,17 +71,13 @@ class ControllerPaymentPaymate extends Controller {
 		if (isset($this->request->post['responseCode'])) {
 			if($this->request->post['responseCode'] == 'PA' || $this->request->post['responseCode'] == 'PP') {
 				if (isset($this->request->get['oid']) && isset($this->request->get['conf'])) {
-					$this->load->library('encryption');
-					
-					$encryption = new Encryption($this->config->get('config_encryption'));
-
-					$order_id = $encryption->decrypt(base64_decode($this->request->get['oid']));
+					$order_id = base64_decode($this->request->get['oid']);
 
 					$this->load->model('checkout/order');
 					
 					$order_info = $this->model_checkout_order->getOrder($order_id);
 
-					if((isset($order_info['payment_firstname']) && isset($order_info['payment_lastname'])) && strcmp($encryption->decrypt(base64_decode($this->request->get['conf'])),$order_info['payment_firstname'] . $order_info['payment_lastname']) == 0) {
+					if ((isset($order_info['payment_firstname']) && isset($order_info['payment_lastname'])) && strcmp(base64_decode($this->request->get['conf']), $order_info['payment_firstname'] . $order_info['payment_lastname']) == 0) {
 						$this->model_checkout_order->confirm($order_id, $this->config->get('paymate_order_status_id'));
 					} else {
 						$error = $this->language->get('text_unable');

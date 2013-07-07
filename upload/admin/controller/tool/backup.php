@@ -79,14 +79,14 @@ class ControllerToolBackup extends Controller {
 		$this->template = 'tool/backup.tpl';
 		$this->children = array(
 			'common/header',
-			'common/footer',
+			'common/footer'
 		);
 				
 		$this->response->setOutput($this->render());
 	}
 	
 	public function backup() {
-		if ($this->request->server['REQUEST_METHOD'] == 'POST' && $this->validate()) {
+		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validate()) {
 			$this->response->addheader('Pragma: public');
 			$this->response->addheader('Expires: 0');
 			$this->response->addheader('Content-Description: File Transfer');

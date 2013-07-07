@@ -17,6 +17,8 @@ class ControllerProductSearch extends Controller {
 		
 		if (isset($this->request->get['filter_tag'])) {
 			$filter_tag = $this->request->get['filter_tag'];
+		} elseif (isset($this->request->get['filter_name'])) {
+			$filter_tag = $this->request->get['filter_name'];
 		} else {
 			$filter_tag = '';
 		} 

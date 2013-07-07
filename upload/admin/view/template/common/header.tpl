@@ -18,8 +18,8 @@
 <link rel="<?php echo $style['rel']; ?>" type="text/css" href="<?php echo $style['href']; ?>" media="<?php echo $style['media']; ?>" />
 <?php } ?>
 <script type="text/javascript" src="view/javascript/jquery/jquery-1.6.1.min.js"></script>
-<script type="text/javascript" src="view/javascript/jquery/ui/jquery-ui-1.8.9.custom.min.js"></script>
-<link rel="stylesheet" type="text/css" href="view/javascript/jquery/ui/themes/ui-lightness/jquery-ui-1.8.9.custom.css" />
+<script type="text/javascript" src="view/javascript/jquery/ui/jquery-ui-1.8.16.custom.min.js"></script>
+<link rel="stylesheet" type="text/css" href="view/javascript/jquery/ui/themes/ui-lightness/jquery-ui-1.8.16.custom.css" />
 <script type="text/javascript" src="view/javascript/jquery/ui/external/jquery.bgiframe-2.1.2.js"></script>
 <script type="text/javascript" src="view/javascript/jquery/tabs.js"></script>
 <script type="text/javascript" src="view/javascript/jquery/superfish/js/superfish.js"></script>
@@ -31,11 +31,10 @@
 // Confirm Actions (delete, uninstall)
 //-----------------------------------------
 $(document).ready(function(){
-	
     // Confirm Delete
     $('#form').submit(function(){
         if ($(this).attr('action').indexOf('delete',1) != -1) {
-            if (!confirm ('<?php echo $text_confirm; ?>')) {
+            if (!confirm('<?php echo $text_confirm; ?>')) {
                 return false;
             }
         }
@@ -43,8 +42,8 @@ $(document).ready(function(){
     	
     // Confirm Uninstall
     $('a').click(function(){
-        if ($(this).attr('href') != null && $(this).attr('href').indexOf('uninstall',1) != -1) {
-            if (!confirm ('<?php echo $text_confirm; ?>')) {
+        if ($(this).attr('href') != null && $(this).attr('href').indexOf('uninstall', 1) != -1) {
+            if (!confirm('<?php echo $text_confirm; ?>')) {
                 return false;
             }
         }
@@ -71,8 +70,8 @@ $(document).ready(function(){
           <li><a href="<?php echo $product; ?>"><?php echo $text_product; ?></a></li>
           <li><a class="parent"><?php echo $text_attribute; ?></a>
             <ul>
-              <li><a href="<?php echo $attribute; ?>"><?php echo $text_attribute; ?></a>
-              <li><a href="<?php echo $attribute_group; ?>"><?php echo $text_attribute_group; ?></a>
+              <li><a href="<?php echo $attribute; ?>"><?php echo $text_attribute; ?></a></li>
+              <li><a href="<?php echo $attribute_group; ?>"><?php echo $text_attribute_group; ?></a></li>
             </ul>
           </li>
           <li><a href="<?php echo $option; ?>"><?php echo $text_option; ?></a></li>
@@ -143,7 +142,12 @@ $(document).ready(function(){
               <li><a href="<?php echo $country; ?>"><?php echo $text_country; ?></a></li>
               <li><a href="<?php echo $zone; ?>"><?php echo $text_zone; ?></a></li>
               <li><a href="<?php echo $geo_zone; ?>"><?php echo $text_geo_zone; ?></a></li>
-              <li><a href="<?php echo $tax_class; ?>"><?php echo $text_tax_class; ?></a></li>
+              <li><a class="parent"><?php echo $text_tax; ?></a>
+                <ul>
+                  <li><a href="<?php echo $tax_class; ?>"><?php echo $text_tax_class; ?></a></li>
+                  <li><a href="<?php echo $tax_rate; ?>"><?php echo $text_tax_rate; ?></a></li>
+                </ul>
+              </li>
               <li><a href="<?php echo $length_class; ?>"><?php echo $text_length_class; ?></a></li>
               <li><a href="<?php echo $weight_class; ?>"><?php echo $text_weight_class; ?></a></li>
             </ul>
@@ -154,9 +158,33 @@ $(document).ready(function(){
       </li>
       <li id="reports"><a class="top"><?php echo $text_reports; ?></a>
         <ul>
-          <li><a href="<?php echo $report_sale; ?>"><?php echo $text_report_sale; ?></a></li>
-          <li><a href="<?php echo $report_viewed; ?>"><?php echo $text_report_viewed; ?></a></li>
-          <li><a href="<?php echo $report_purchased; ?>"><?php echo $text_report_purchased; ?></a></li>
+          <li><a class="parent"><?php echo $text_sale; ?></a>
+            <ul>
+              <li><a href="<?php echo $report_sale_order; ?>"><?php echo $text_report_sale_order; ?></a></li>
+              <li><a href="<?php echo $report_sale_tax; ?>"><?php echo $text_report_sale_tax; ?></a></li>
+              <li><a href="<?php echo $report_sale_shipping; ?>"><?php echo $text_report_sale_shipping; ?></a></li>
+              <li><a href="<?php echo $report_sale_return; ?>"><?php echo $text_report_sale_return; ?></a></li>
+              <li><a href="<?php echo $report_sale_coupon; ?>"><?php echo $text_report_sale_coupon; ?></a></li>
+            </ul>
+          </li>
+          <li><a class="parent"><?php echo $text_product; ?></a>
+            <ul>
+              <li><a href="<?php echo $report_product_viewed; ?>"><?php echo $text_report_product_viewed; ?></a></li>
+              <li><a href="<?php echo $report_product_purchased; ?>"><?php echo $text_report_product_purchased; ?></a></li>
+            </ul>
+          </li>
+          <li><a class="parent"><?php echo $text_customer; ?></a>
+            <ul>
+              <li><a href="<?php echo $report_customer_order; ?>"><?php echo $text_report_customer_order; ?></a></li>
+              <li><a href="<?php echo $report_customer_reward; ?>"><?php echo $text_report_customer_reward; ?></a></li>
+              <li><a href="<?php echo $report_customer_credit; ?>"><?php echo $text_report_customer_credit; ?></a></li>
+            </ul>
+          </li>
+          <li><a class="parent"><?php echo $text_affiliate; ?></a>
+            <ul>
+              <li><a href="<?php echo $report_affiliate_commission; ?>"><?php echo $text_report_affiliate_commission; ?></a></li>
+            </ul>
+          </li>
         </ul>
       </li>
       <li id="help"><a class="top"><?php echo $text_help; ?></a>

@@ -16,13 +16,13 @@ class ModelShippingUps extends Model {
 		$method_data = array();
 		
 		if ($status) {
-			$weight = $this->weight->convert($this->cart->getWeight(), $this->config->get('config_weight_class'), $this->config->get('ups_weight_class'));
+			$weight = $this->weight->convert($this->cart->getWeight(), $this->config->get('config_weight_class_id'), $this->config->get('ups_weight_class_id'));
 			
 			$weight = ($weight < 0.1 ? 0.1 : $weight);
 			
-			$length = $this->length->convert($this->config->get('ups_length'), $this->config->get('config_length_class'), $this->config->get('ups_length_class'));
-			$width = $this->length->convert($this->config->get('ups_width'), $this->config->get('config_length_class'), $this->config->get('ups_length_class'));
-			$height = $this->length->convert($this->config->get('ups_height'), $this->config->get('config_length_class'), $this->config->get('ups_length_class'));
+			$length = $this->length->convert($this->config->get('ups_length'), $this->config->get('config_length_class_id'), $this->config->get('ups_length_class_id'));
+			$width = $this->length->convert($this->config->get('ups_width'), $this->config->get('config_length_class_id'), $this->config->get('ups_length_class_id'));
+			$height = $this->length->convert($this->config->get('ups_height'), $this->config->get('config_length_class_id'), $this->config->get('ups_length_class_id'));
 			
 			$service_code = array(
 				// US Origin
@@ -255,7 +255,7 @@ class ModelShippingUps extends Model {
 								'title'        => $service_code[$this->config->get('ups_origin')][$code],
 								'cost'         => $this->currency->convert($cost, $currency, $this->config->get('config_currency')),
 								'tax_class_id' => $this->config->get('ups_tax_class_id'),
-								'text'         => $this->currency->format($this->tax->calculate($this->currency->convert($cost, $this->config->get('config_currency'), $this->currency->getCode()), $this->config->get('ups_tax_class_id'), $this->config->get('config_tax')))
+								'text'         => $this->currency->format($this->tax->calculate($this->currency->convert($cost, $currency, $this->currency->getCode()), $this->config->get('ups_tax_class_id'), $this->config->get('config_tax')))
 							);
 						}
 					}
@@ -265,8 +265,13 @@ class ModelShippingUps extends Model {
 			$title = $this->language->get('text_title');
 			
 			if ($this->config->get('ups_display_weight')) {	  
-				$title .= ' (' . $this->language->get('text_weight') . ' ' . $this->weight->format($weight, $this->config->get('ups_weight_class')) . ')';
+				$title .= ' (' . $this->language->get('text_weight') . ' ' . $this->weight->format($weight, $this->config->get('ups_weight_class_id')) . ')';
 			}
+		
+			function comparecost ($a, $b) {
+				return $a['cost'] > $b['cost'];
+			}
+			uasort($quote_data, 'comparecost');
 		
 			$method_data = array(
 				'code'       => 'ups',

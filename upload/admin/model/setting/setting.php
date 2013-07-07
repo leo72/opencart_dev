@@ -6,7 +6,11 @@ class ModelSettingSetting extends Model {
 		$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "setting WHERE store_id = '" . (int)$store_id . "' AND `group` = '" . $this->db->escape($group) . "'");
 		
 		foreach ($query->rows as $result) {
-			$data[$result['key']] = $result['value'];
+			if (!$result['serialized']) {
+				$data[$result['key']] = $result['value'];
+			} else {
+				$data[$result['key']] = unserialize($setting['value']);
+			}
 		}
 
 		return $data;
@@ -16,7 +20,11 @@ class ModelSettingSetting extends Model {
 		$this->db->query("DELETE FROM " . DB_PREFIX . "setting WHERE store_id = '" . (int)$store_id . "' AND `group` = '" . $this->db->escape($group) . "'");
 
 		foreach ($data as $key => $value) {
-			$this->db->query("INSERT INTO " . DB_PREFIX . "setting SET store_id = '" . (int)$store_id . "', `group` = '" . $this->db->escape($group) . "', `key` = '" . $this->db->escape($key) . "', `value` = '" . $this->db->escape($value) . "'");
+			if (!is_array($value)) {
+				$this->db->query("INSERT INTO " . DB_PREFIX . "setting SET store_id = '" . (int)$store_id . "', `group` = '" . $this->db->escape($group) . "', `key` = '" . $this->db->escape($key) . "', `value` = '" . $this->db->escape($value) . "'");
+			} else {
+				$this->db->query("INSERT INTO " . DB_PREFIX . "setting SET store_id = '" . (int)$store_id . "', `group` = '" . $this->db->escape($group) . "', `key` = '" . $this->db->escape($key) . "', `value` = '" . $this->db->escape(serialize($value)) . "', serialized = '1'");
+			}
 		}
 	}
 	

@@ -126,7 +126,12 @@ class ControllerProductCategory extends Controller {
 			$results = $this->model_catalog_category->getCategories($category_id);
 			
 			foreach ($results as $result) {
-				$product_total = $this->model_catalog_product->getTotalProducts(array('filter_category_id' => $result['category_id']));
+				$data = array(
+					'filter_category_id'  => $result['category_id'],
+					'filter_sub_category' => true	
+				);
+							
+				$product_total = $this->model_catalog_product->getTotalProducts($data);
 				
 				$this->data['categories'][] = array(
 					'name'  => $result['name'] . ' (' . $product_total . ')',
@@ -183,7 +188,7 @@ class ControllerProductCategory extends Controller {
 					'product_id'  => $result['product_id'],
 					'thumb'       => $image,
 					'name'        => $result['name'],
-					'description' => substr(strip_tags(html_entity_decode($result['description'], ENT_QUOTES, 'UTF-8')), 0, 100) . '..',
+					'description' => mb_substr(strip_tags(html_entity_decode($result['description'], ENT_QUOTES, 'UTF-8')), 0, 100) . '..',
 					'price'       => $price,
 					'special'     => $special,
 					'tax'         => $tax,

@@ -150,6 +150,14 @@ $('#button-login').live('click', function() {
 			if (json['redirect']) {
 				location = json['redirect'];
 			}
+			
+			if (json['total']) {
+				$('#cart_total').html(json['total']);
+			}
+			
+			if (json['logged']) {
+				$('#welcome').html(json['logged']);
+			}
 						
 			if (json['error']) {
 				$('#checkout .checkout-content').prepend('<div class="warning" style="display: none;">' + json['error']['warning'] + '</div>');
@@ -576,22 +584,22 @@ $('#shipping-address #button-address').live('click', function() {
 							
 							$('#shipping-address .checkout-heading').append('<a><?php echo $text_modify; ?></a>');							
 						}
+						
+						$.ajax({
+							url: 'index.php?route=checkout/address/shipping',
+							dataType: 'json',
+							success: function(json) {
+								if (json['redirect']) {
+									location = json['redirect'];
+								}	
+													
+								if (json['output']) {
+									$('#shipping-address .checkout-content').html(json['output']);
+								}
+							}
+						});						
 					}
 				});	
-				
-				$.ajax({
-					url: 'index.php?route=checkout/address/shipping',
-					dataType: 'json',
-					success: function(json) {
-						if (json['redirect']) {
-							location = json['redirect'];
-						}	
-											
-						if (json['output']) {
-							$('#shipping-address .checkout-content').html(json['output']);
-						}
-					}
-				});								
 			}  
 		}
 	});	

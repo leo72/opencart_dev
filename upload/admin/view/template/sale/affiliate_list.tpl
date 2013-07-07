@@ -14,7 +14,7 @@
   <div class="box">
     <div class="heading">
       <h1><img src="view/image/customer.png" alt="" /> <?php echo $heading_title; ?></h1>
-      <div class="buttons"><a onclick="$('form').attr('action', '<?php echo $approve; ?>'); $('form').submit();" class="button"><span><?php echo $button_approve; ?></span></a><a onclick="location = '<?php echo $insert; ?>'" class="button"><span><?php echo $button_insert; ?></span></a><a onclick="$('form').attr('action', '<?php echo $delete; ?>'); $('form').submit();" class="button"><span><?php echo $button_delete; ?></span></a></div>
+      <div class="buttons"><a onclick="$('form').attr('action', '<?php echo $approve; ?>'); $('form').submit();" class="button"><?php echo $button_approve; ?></a><a onclick="location = '<?php echo $insert; ?>'" class="button"><?php echo $button_insert; ?></a><a onclick="$('form').attr('action', '<?php echo $delete; ?>'); $('form').submit();" class="button"><?php echo $button_delete; ?></a></div>
     </div>
     <div class="content">
       <form action="" method="post" enctype="multipart/form-data" id="form">
@@ -32,11 +32,7 @@
                 <?php } else { ?>
                 <a href="<?php echo $sort_email; ?>"><?php echo $column_email; ?></a>
                 <?php } ?></td>
-              <td class="left"><?php if ($sort == 'balance') { ?>
-                <a href="<?php echo $sort_balance; ?>" class="<?php echo strtolower($order); ?>"><?php echo $column_balance; ?></a>
-                <?php } else { ?>
-                <a href="<?php echo $sort_balance; ?>"><?php echo $column_balance; ?></a>
-                <?php } ?></td>
+              <td class="right"><?php echo $column_balance; ?></td>
               <td class="left"><?php if ($sort == 'c.status') { ?>
                 <a href="<?php echo $sort_status; ?>" class="<?php echo strtolower($order); ?>"><?php echo $column_status; ?></a>
                 <?php } else { ?>
@@ -88,7 +84,7 @@
                   <?php } ?>
                 </select></td>
               <td><input type="text" name="filter_date_added" value="<?php echo $filter_date_added; ?>" size="12" id="date" /></td>
-              <td align="right"><a onclick="filter();" class="button"><span><?php echo $button_filter; ?></span></a></td>
+              <td align="right"><a onclick="filter();" class="button"><?php echo $button_filter; ?></a></td>
             </tr>
             <?php if ($affiliates) { ?>
             <?php foreach ($affiliates as $affiliate) { ?>
@@ -100,7 +96,7 @@
                 <?php } ?></td>
               <td class="left"><?php echo $affiliate['name']; ?></td>
               <td class="left"><?php echo $affiliate['email']; ?></td>
-              <td class="left"><?php echo $affiliate['balance']; ?></td>
+              <td class="right"><?php echo $affiliate['balance']; ?></td>
               <td class="left"><?php echo $affiliate['status']; ?></td>
               <td class="left"><?php echo $affiliate['approved']; ?></td>
               <td class="left"><?php echo $affiliate['date_added']; ?></td>
@@ -167,6 +163,30 @@ function filter() {
 <script type="text/javascript"><!--
 $(document).ready(function() {
 	$('#date').datepicker({dateFormat: 'yy-mm-dd'});
+});
+//--></script> 
+<script type="text/javascript"><!--
+$('input[name=\'filter_name\']').autocomplete({
+	delay: 0,
+	source: function(request, response) {
+		$.ajax({
+			url: 'index.php?route=sale/affiliate/autocomplete&token=<?php echo $token; ?>&filter_name=' +  encodeURIComponent(request.term),
+			dataType: 'json',
+			success: function(json) {		
+				response($.map(json, function(item) {
+					return {
+						label: item.name,
+						value: item.affiliate_id
+					}
+				}));
+			}
+		});
+	}, 
+	select: function(event, ui) {
+		$('input[name=\'filter_name\']').val(ui.item.label);
+						
+		return false;
+	}
 });
 //--></script> 
 <?php echo $footer; ?>
