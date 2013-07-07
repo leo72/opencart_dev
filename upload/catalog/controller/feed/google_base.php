@@ -20,7 +20,7 @@ class ControllerFeedGoogleBase extends Controller {
 			foreach ($products as $product) {
 				if ($product['description']) {
 					$output .= '<item>';
-					$output .= '<title>' . html_entity_decode($product['name'], ENT_QUOTES, 'UTF-8') . '</title>';
+					$output .= '<title>' . $product['name'] . '</title>';
 					$output .= '<link>' . $this->url->link('product/product', 'product_id=' . $product['product_id']) . '</link>';
 					$output .= '<description>' . $product['description'] . '</description>';
 					$output .= '<g:brand>' . html_entity_decode($product['manufacturer'], ENT_QUOTES, 'UTF-8') . '</g:brand>';
@@ -75,7 +75,8 @@ class ControllerFeedGoogleBase extends Controller {
 					
 					$output .= '<g:quantity>' . $product['quantity'] . '</g:quantity>';
 					$output .= '<g:upc>' . $product['upc'] . '</g:upc>'; 
-					$output .= '<g:weight>' . $this->weight->format($product['weight'], $product['weight_class_id']) . '</g:weight>'; 
+					$output .= '<g:weight>' . $this->weight->format($product['weight'], $product['weight_class_id']) . '</g:weight>';
+					$output .= '<g:availability>' . ($product['quantity'] ? 'in stock' : 'out of stock') . '</g:availability>';
 					$output .= '</item>';
 				}
 			}

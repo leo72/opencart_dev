@@ -814,7 +814,7 @@ class ControllerCatalogProduct extends Controller {
 		
     	if (isset($this->request->post['price'])) {
       		$this->data['price'] = $this->request->post['price'];
-    	} else if (!empty($product_info)) {
+    	} elseif (!empty($product_info)) {
 			$this->data['price'] = $product_info['price'];
 		} else {
       		$this->data['price'] = '';
@@ -826,7 +826,7 @@ class ControllerCatalogProduct extends Controller {
     	
 		if (isset($this->request->post['tax_class_id'])) {
       		$this->data['tax_class_id'] = $this->request->post['tax_class_id'];
-    	} else if (!empty($product_info)) {
+    	} elseif (!empty($product_info)) {
 			$this->data['tax_class_id'] = $product_info['tax_class_id'];
 		} else {
       		$this->data['tax_class_id'] = 0;
@@ -878,7 +878,7 @@ class ControllerCatalogProduct extends Controller {
     	
 		if (isset($this->request->post['stock_status_id'])) {
       		$this->data['stock_status_id'] = $this->request->post['stock_status_id'];
-    	} else if (!empty($product_info)) {
+    	} elseif (!empty($product_info)) {
       		$this->data['stock_status_id'] = $product_info['stock_status_id'];
     	} else {
 			$this->data['stock_status_id'] = $this->config->get('config_stock_status_id');
@@ -886,7 +886,7 @@ class ControllerCatalogProduct extends Controller {
 				
     	if (isset($this->request->post['status'])) {
       		$this->data['status'] = $this->request->post['status'];
-    	} else if (!empty($product_info)) {
+    	} elseif (!empty($product_info)) {
 			$this->data['status'] = $product_info['status'];
 		} else {
       		$this->data['status'] = 1;
@@ -894,7 +894,7 @@ class ControllerCatalogProduct extends Controller {
 
     	if (isset($this->request->post['weight'])) {
       		$this->data['weight'] = $this->request->post['weight'];
-		} else if (!empty($product_info)) {
+		} elseif (!empty($product_info)) {
 			$this->data['weight'] = $product_info['weight'];
     	} else {
       		$this->data['weight'] = '';
@@ -956,6 +956,8 @@ class ControllerCatalogProduct extends Controller {
 			$this->data['product_attributes'] = array();
 		}
 		
+		$this->load->model('catalog/option');
+		
 		if (isset($this->request->post['product_option'])) {
 			$product_options = $this->request->post['product_option'];
 		} elseif (isset($this->request->get['product_id'])) {
@@ -987,10 +989,10 @@ class ControllerCatalogProduct extends Controller {
 				
 				$this->data['product_options'][] = array(
 					'product_option_id'    => $product_option['product_option_id'],
+					'product_option_value' => $product_option_value_data,
 					'option_id'            => $product_option['option_id'],
 					'name'                 => $product_option['name'],
 					'type'                 => $product_option['type'],
-					'product_option_value' => $product_option_value_data,
 					'required'             => $product_option['required']
 				);				
 			} else {
@@ -1002,6 +1004,16 @@ class ControllerCatalogProduct extends Controller {
 					'option_value'      => $product_option['option_value'],
 					'required'          => $product_option['required']
 				);				
+			}
+		}
+		
+		$this->data['option_values'] = array();
+		
+		foreach ($product_options as $product_option) {
+			if ($product_option['type'] == 'select' || $product_option['type'] == 'radio' || $product_option['type'] == 'checkbox' || $product_option['type'] == 'image') {
+				if (!isset($this->data['option_values'][$product_option['option_id']])) {
+					$this->data['option_values'][$product_option['option_id']] = $this->model_catalog_option->getOptionValues($product_option['option_id']);
+				}
 			}
 		}
 		
@@ -1045,7 +1057,7 @@ class ControllerCatalogProduct extends Controller {
 			$this->data['product_images'][] = array(
 				'image'      => $image,
 				'thumb'      => $this->model_tool_image->resize($image, 100, 100),
-				'sort_order' => $product_image['sort_order'],
+				'sort_order' => $product_image['sort_order']
 			);
 		}
 
@@ -1098,7 +1110,7 @@ class ControllerCatalogProduct extends Controller {
 
     	if (isset($this->request->post['points'])) {
       		$this->data['points'] = $this->request->post['points'];
-    	} else if (!empty($product_info)) {
+    	} elseif (!empty($product_info)) {
 			$this->data['points'] = $product_info['points'];
 		} else {
       		$this->data['points'] = '';
@@ -1182,26 +1194,6 @@ class ControllerCatalogProduct extends Controller {
 	  		return false;
 		}
   	}
-	
-	public function option() {
-		$output = ''; 
-		
-		$this->load->model('catalog/option');
-		
-		$results = $this->model_catalog_option->getOptionValues($this->request->get['option_id']);
-		
-		foreach ($results as $result) {
-			$output .= '<option value="' . $result['option_value_id'] . '"';
-
-			if (isset($this->request->get['option_value_id']) && ($this->request->get['option_value_id'] == $result['option_value_id'])) {
-				$output .= ' selected="selected"';
-			}
-
-			$output .= '>' . $result['name'] . '</option>';
-		}
-
-		$this->response->setOutput($output);
-	}
 		
 	public function autocomplete() {
 		$json = array();
@@ -1288,7 +1280,7 @@ class ControllerCatalogProduct extends Controller {
 						);				
 					}
 				}
-				
+					
 				$json[] = array(
 					'product_id' => $result['product_id'],
 					'name'       => html_entity_decode($result['name'], ENT_QUOTES, 'UTF-8'),	

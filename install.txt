@@ -38,6 +38,15 @@ INSTALL
 
 6. Delete the install directory after install is complete.
 
+Note:
+
+Installing OpenCart on a local computer using AMPPS
+
+http://www.ampps.com/wiki/Install
+
+AMPPS is already used by 10000+ developers and it will soon be the new standard for development as it has the latest software and auto installing capabilities.
+
+
 
 For any support issues please visit: http://www.opencart.com
 

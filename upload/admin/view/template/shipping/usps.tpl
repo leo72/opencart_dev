@@ -439,14 +439,6 @@
               <?php } ?>
 		    </td>
           </tr>
-          <tr>
-            <td><span class="required">*</span> <?php echo $entry_girth; ?></td>
-            <td><input type="text" name="usps_girth" value="<?php echo $usps_girth; ?>" size="4" />
-		      <?php if ($error_girth) { ?>
-              <span class="error"><?php echo $error_girth; ?></span>
-              <?php } ?>
-		    </td>
-          </tr>
 		  <tr>
             <td><?php echo $entry_display_time; ?></td>
             <td><?php if ($usps_display_time) { ?>
@@ -530,8 +522,8 @@
             <td><input type="text" name="usps_sort_order" value="<?php echo $usps_sort_order; ?>" size="1" /></td>
           </tr>
 		  <tr>
-          <td><?php echo $entry_debug; ?></td>
-          <td><select name="usps_debug">
+            <td><?php echo $entry_debug; ?></td>
+            <td><select name="usps_debug">
               <?php if ($usps_debug) { ?>
               <option value="1" selected="selected"><?php echo $text_enabled; ?></option>
               <option value="0"><?php echo $text_disabled; ?></option>
@@ -540,7 +532,7 @@
               <option value="0" selected="selected"><?php echo $text_disabled; ?></option>
               <?php } ?>
             </select></td>
-        </tr>
+          </tr>
         </table>
       </form>
     </div>
