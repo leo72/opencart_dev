@@ -36,3 +36,7 @@
 # /upload/backup.install/*
 # /upload/install/*
 
+# IDE files
+.idea/
+.settings/
+
