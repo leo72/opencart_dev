@@ -1,0 +1,16 @@
+# System Cache Files
+/upload/system/cache/*
+!/upload/system/cache/index.html
+
+
+# Image Cache Files
+/upload/image/cache/*
+!/upload/image/cache/index.html
+
+# Log Files
+/upload/system/logs/*
+!/upload/system/logs/index.html
+
+# IDE files
+.idea/
+.settings/
