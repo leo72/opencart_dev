@@ -1,0 +1,3 @@
+[submodule "upload/vqgen"]
+	path = upload/vqgen
+	url = git@github.com:leo72/vqgen.git
