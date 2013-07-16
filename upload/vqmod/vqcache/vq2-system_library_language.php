@@ -1,6 +1,5 @@
 <?php
-class Language {
-	private $default = 'english';
+final class Language {
 	private $directory;
 	private $data = array();
  
@@ -24,22 +23,9 @@ class Language {
 			$this->data = array_merge($this->data, $_);
 			
 			return $this->data;
-		}
-		
-		$file = DIR_LANGUAGE . $this->default . '/' . $filename . '.php';
-		
-		if (file_exists($file)) {
-			$_ = array();
-	  		
-			global $vqmod;
-			require($vqmod->modCheck($file));
-		
-			$this->data = array_merge($this->data, $_);
-			
-			return $this->data;
 		} else {
 			trigger_error('Error: Could not load language ' . $filename . '!');
-		//	exit();
+			exit();
 		}
   	}
 }

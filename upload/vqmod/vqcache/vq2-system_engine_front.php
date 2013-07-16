@@ -32,15 +32,20 @@ final class Front {
     
 	private function execute($action) {
 		global $vqmod;
-		if (file_exists($vqmod->modCheck($action->getFile()))) {
-			require_once($vqmod->modCheck($action->getFile()));
-			
-			$class = $action->getClass();
+		$file = $vqmod->modCheck($action->getFile());
+		$class = $action->getClass();
+		$method = $action->getMethod();
+		$args = $action->getArgs();
+
+		$action = '';
+
+		if (file_exists($file)) {
+			require_once($file);
 
 			$controller = new $class($this->registry);
 			
-			if (is_callable(array($controller, $action->getMethod()))) {
-				$action = call_user_func_array(array($controller, $action->getMethod()), $action->getArgs());
+			if (is_callable(array($controller, $method))) {
+				$action = call_user_func_array(array($controller, $method), $args);
 			} else {
 				$action = $this->error;
 			

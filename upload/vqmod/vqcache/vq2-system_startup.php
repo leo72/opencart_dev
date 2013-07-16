@@ -69,10 +69,6 @@ if (!isset($_SERVER['REQUEST_URI'])) {
 	} 
 }
 
-if (!isset($_SERVER['HTTP_HOST'])) {
-	$_SERVER['HTTP_HOST'] = getenv('HTTP_HOST');
-}
-
 // Helper
 require_once($vqmod->modCheck(DIR_SYSTEM . 'helper/json.php')); 
 require_once($vqmod->modCheck(DIR_SYSTEM . 'helper/utf8.php')); 
@@ -91,7 +87,6 @@ require_once($vqmod->modCheck(DIR_SYSTEM . 'library/url.php'));
 require_once($vqmod->modCheck(DIR_SYSTEM . 'library/config.php'));
 require_once($vqmod->modCheck(DIR_SYSTEM . 'library/db.php'));
 require_once($vqmod->modCheck(DIR_SYSTEM . 'library/document.php'));
-require_once($vqmod->modCheck(DIR_SYSTEM . 'library/encryption.php'));
 require_once($vqmod->modCheck(DIR_SYSTEM . 'library/image.php'));
 require_once($vqmod->modCheck(DIR_SYSTEM . 'library/language.php'));
 require_once($vqmod->modCheck(DIR_SYSTEM . 'library/log.php'));

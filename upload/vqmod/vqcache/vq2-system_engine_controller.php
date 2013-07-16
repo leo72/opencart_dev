@@ -26,22 +26,24 @@ abstract class Controller {
 
 	protected function redirect($url, $status = 302) {
 		header('Status: ' . $status);
-		header('Location: ' . str_replace(array('&amp;', "\n", "\r"), array('&', '', ''), $url));
-		exit();				
+		header('Location: ' . str_replace('&amp;', '&', $url));
+		exit();
 	}
 	
 	protected function getChild($child, $args = array()) {
 		$action = new Action($child, $args);
-	
 		global $vqmod;
-		if (file_exists($vqmod->modCheck($action->getFile()))) {
-			require_once($vqmod->modCheck($action->getFile()));
-
-			$class = $action->getClass();
+		$file = $vqmod->modCheck($action->getFile());
+		$class = $action->getClass();
+		$method = $action->getMethod();
+	
+global $vqmod; $file = $vqmod->modCheck($file);
+		if (file_exists($file)) {
+			require_once($file);
 
 			$controller = new $class($this->registry);
-
-			$controller->{$action->getMethod()}($action->getArgs());
+			
+			$controller->$method($args);
 			
 			return $controller->output;
 		} else {
