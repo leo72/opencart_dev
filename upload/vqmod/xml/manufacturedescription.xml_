@@ -1,0 +1,72 @@
+<modification>
+	<id><![CDATA[Manufacture Description]]></id>
+	<version><![CDATA[3.0]]></version>
+	<vqmver><![CDATA[2.2.1]]></vqmver>
+	<author><![CDATA[codertj - info@codertj.com  ]]></author>
+	<file name="admin/view/template/catalog/manufacturer_list.tpl">
+		<operation>
+			<search position="before"><![CDATA[<td class="left"><?php if ($sort == 'name') { ?>]]></search>
+			<add><![CDATA[<td width="100" class="center"><?php echo $column_image; ?></td>]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[<td class="left"><?php echo $manufacturer['name']; ?></td>]]></search>
+			<add><![CDATA[<td class="center"><img src="<?php echo $manufacturer['image']; ?>" alt="<?php echo $manufacturer['name']; ?>" title="<?php echo $manufacturer['name']; ?>" style="padding: 1px; border: 1px solid #DDDDDD;" /></td>  
+]]></add>
+		</operation>
+	</file>
+	<file name="admin/language/english/catalog/manufacturer.php">
+		<operation>
+			<search position="before"><![CDATA[$_['column_name']        = 'Manufacturer Name';]]></search>
+			<add><![CDATA[$_['column_image']       = 'Image';]]></add>
+		</operation>
+		<operation>
+			<search position="after"><![CDATA[$_['entry_type']         = 'Type:';]]></search>
+			<add><![CDATA[$_['entry_description']	 = 'Description:';]]></add>
+		</operation>
+	</file>
+	<file name="admin/controller/catalog/manufacturer.php">
+		<operation>
+			<search position="after"><![CDATA[protected function getList() {]]></search>
+			<add><![CDATA[$this->load->model('tool/image');]]></add>
+		</operation>
+		<operation>
+			<search position="after"><![CDATA[$action = array();]]></search>
+			<add><![CDATA[if ($result['image'] && file_exists(DIR_IMAGE . $result['image'])) {
+				$image = $this->model_tool_image->resize($result['image'], 40, 40);
+			} else {
+				$image = $this->model_tool_image->resize('no_image.jpg', 40, 40);
+			}]]></add>
+		</operation>
+		<operation>
+			<search position="after"><![CDATA['manufacturer_id' => $result['manufacturer_id'],]]></search>
+			<add><![CDATA['image'			  => $image,]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[$this->data['column_name'] = $this->language->get('column_name');]]></search>
+			<add><![CDATA[$this->data['column_image'] = $this->language->get('column_image');]]></add>
+		</operation>
+	</file>
+	<file name="catalog/controller/product/manufacturer.php">
+		<operation>
+			<search position="before"><![CDATA['href' => $this->url->link('product/manufacturer/info', 'manufacturer_id=' . $result['manufacturer_id'])]]></search>
+			<add><![CDATA['image'=> $this->model_tool_image->resize($result['image'],120,120),]]></add>
+		</operation>
+		<operation>
+			<search position="after"><![CDATA[$this->data['heading_title'] = $manufacturer_info['name']; ]]></search>
+			<add><![CDATA[ $this->data['image'] = $this->model_tool_image->resize($manufacturer_info['image'],60,60); ]]></add>
+		</operation>
+		</file>
+	<file name="catalog/view/theme/default/template/product/manufacturer_list.tpl">
+		<operation>
+			<search position="replace"><![CDATA[ <li><a href="<?php echo $category['manufacturer'][$i]['href']; ?>"><?php echo $category['manufacturer'][$i]['name']; ?></a></li>]]></search>
+			<add><![CDATA[ <li style="text-align:center;"><?php if($category['manufacturer'][$i]['image']){ ?>
+<a href="<?php echo $category['manufacturer'][$i]['href']; ?>"><img src="<?php  echo $category['manufacturer'][$i]['image']; ?> " alt="<?php echo $category['manufacturer'][$i]['name']; ?>" title="<?php echo $category['manufacturer'][$i]['name']; ?>"/></a><?php } ?><br /><a href="<?php echo $category['manufacturer'][$i]['href']; ?>"><?php echo $category['manufacturer'][$i]['name']; ?></a></li>]]></add>
+		</operation>
+	</file>
+	<file name="catalog/view/theme/default/template/product/manufacturer_info.tpl">
+		<operation>
+			<search position="replace"><![CDATA[<h1><?php echo $heading_title; ?></h1>]]></search>
+			<add><![CDATA[  <h1><img src="<?php echo $image; ?>" alt="test"  style="vertical-align:middle; margin-right:10px" /><?php echo $heading_title; ?></h1>]]></add>
+		</operation>
+	</file>
+</modification>
