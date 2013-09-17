@@ -2,6 +2,9 @@
 /upload/system/cache/*
 !/upload/system/cache/index.html
 
+# vQcache
+/upload/vqmod/vqcache/*
+
 
 # Image Cache Files
 /upload/image/cache/*
@@ -14,4 +17,6 @@
 # IDE files
 .idea/
 .settings/
+
+
 
